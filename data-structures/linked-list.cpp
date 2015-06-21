@@ -1,89 +1,166 @@
 #include <iostream>
-
 using namespace std;
-using std::cout;
-using std::endl;
 
+#include <list>
 
-class Node
-{
-	friend class LinkedList;
+// Node class
+class Node {
+	int data;
+	Node* next;
 
 public:
-	Node( void ) : m_pNext( NULL )
-	{}
-
-	Node( int nValue ) : m_nValue( nValue ), m_pNext( NULL )
-	{}
-
-	Node( int nValue, Node* pNext ) : m_nValue( nValue ), m_pNext( pNext )
-	{}
-
-	int GetValue( void )
-	{
-		return m_nValue;
-	}
-
-	Node* GetNext( void )
-	{
-		return m_pNext;
-	}
-
-private:
-	int   m_nValue;
-	Node* m_pNext;
+	Node( ) {};
+	void SetData( int aData ) { data = aData; };
+	void SetNext( Node* aNext ) { next = aNext; };
+	int Data( ) { return data; };
+	Node* Next( ) { return next; };
 };
 
-
-class LinkedList
-{
+// List class
+class List {
+	Node *head;
 public:
-	LinkedList( void )
-	{
-		m_pHead = NULL;
-		m_pTail = NULL;
-	}
-
-	LinkedList( int nValue )
-	{
-		m_pHead = new Node( nValue );
-		m_pTail = m_pHead;
-	}
-
-	~LinkedList( void )
-	{}
-
-	void TravereAndPrint( )
-	{
-		if ( m_pHead == NULL )
-		{
-			cout << "Empty List" << endl;
-			return;
-		}
-
-		Node* pCurrNode;
-
-		while ( pCurrNode != NULL )
-		{
-			cout << pCurrNode->m_nValue << endl;
-			pCurrNode = pCurrNode->m_pNext;
-		}
-
-		cout << endl;
-	}
-
-private:
-	Node* m_pHead;
-	Node* m_pTail;
+	List( ) { head = NULL; };
+	void Print( );
+	void Append( int data );
+	void Delete( int data );
 };
 
+/**
+* Print the contents of the list
+*/
+void List::Print( ) {
+
+	// Temp pointer
+	Node *tmp = head;
+
+	// No nodes
+	if ( tmp == NULL ) {
+		cout << "EMPTY" << endl;
+		return;
+	}
+
+	// One node in the list
+	if ( tmp->Next( ) == NULL ) {
+		cout << tmp->Data( );
+		cout << " --> ";
+		cout << "NULL" << endl;
+	}
+	else {
+		// Parse and print the list
+		do {
+			cout << tmp->Data( );
+			cout << " --> ";
+			tmp = tmp->Next( );
+		} while ( tmp != NULL );
+
+		cout << "NULL" << endl;
+	}
+}
+
+/**
+* Append a node to the linked list
+*/
+void List::Append( int data ) {
+
+	// Create a new node
+	Node* newNode = new Node( );
+	newNode->SetData( data );
+	newNode->SetNext( NULL );
+
+	// Create a temp pointer
+	Node *tmp = head;
+
+	if ( tmp != NULL ) {
+		// Nodes already present in the list
+		// Parse to end of list
+		while ( tmp->Next( ) != NULL ) {
+			tmp = tmp->Next( );
+		}
+
+		// Point the last node to the new node
+		tmp->SetNext( newNode );
+	}
+	else {
+		// First node in the list
+		head = newNode;
+	}
+}
+
+/**
+* Delete a node from the list
+*/
+void List::Delete( int data ) {
+
+	// Create a temp pointer
+	Node *tmp = head;
+
+	// No nodes
+	if ( tmp == NULL )
+		return;
+
+	// Last node of the list
+	if ( tmp->Next( ) == NULL ) {
+		delete tmp;
+		head = NULL;
+	}
+	else {
+		// Parse thru the nodes
+		Node *prev = tmp;
+		do {
+			if ( tmp->Data( ) == data ) break;
+			prev = tmp;
+			tmp = tmp->Next( );
+		} while ( tmp != NULL );
+
+		// Adjust the pointers
+		prev->SetNext( tmp->Next( ) );
+
+		// Delete the current node
+		delete tmp;
+	}
+}
 
 int main( )
 {
-	LinkedList testList;
+	// New list
+	List list;
 
-	cout << "Creating Empty Linked List" << endl;
-	cout << "List Values : " << endl;
+	// Append nodes to the list
+	list.Append( 100 );
+	list.Print( );
+	list.Append( 200 );
+	list.Print( );
+	list.Append( 300 );
+	list.Print( );
+	list.Append( 400 );
+	list.Print( );
+	list.Append( 500 );
+	list.Print( );
+
+	// Delete nodes from the list
+	list.Delete( 400 );
+	list.Print( );
+	list.Delete( 300 );
+	list.Print( );
+	list.Delete( 200 );
+	list.Print( );
+	list.Delete( 500 );
+	list.Print( );
+	list.Delete( 100 );
+	list.Print( );
+
+
+	std::list<int> myList;
+	myList.push_back( 5 );
+	myList.push_front( 3 );
+	myList.push_back( 9 );
+	myList.remove( 5 );
+
+
+	for ( auto it = myList.begin(); it != myList.end(); it++ )
+		cout << ( *it ) << endl;
+
 
 	return 0;
 }
